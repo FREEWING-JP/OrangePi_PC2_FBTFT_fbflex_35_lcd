@@ -7,7 +7,7 @@ http://www.neko.ne.jp/~freewing/raspberry_pi/orange_pi_pc2/
 
 You can choose any control method .  
 1. Linux spidev version  
-2. [WIP] WiringPi library version  
+2. WiringOp H5(WiringPi) library version  
 
 ## FREE WING Homepage
 http://www.neko.ne.jp/~freewing/  
@@ -78,19 +78,30 @@ sudo ./fbflex_lcd_op_spidev
 
 
 ---
-## [WIP] Build WiringPi WiringOp H5 library version
+## Build WiringPi WiringOp H5 library version
 ##### # WiringPi - GPIO Interface library for the Raspberry Pi
 ##### # http://wiringpi.com/
 
 #### # Enable SPI
+sudo nano /boot/armbianEnv.txt  
 
+#### # Edit and Add Line
+overlays=spi1-spidev  
 
 #### # build WiringOp H5
 cd  
 git clone https://github.com/kazukioishi/WiringOP.git -b h5  
 cd WiringOP  
+
+#### # edit WiringOp H5
+#### # nano wiringPi/wiringPiSPI.c
+#### # const static char *spiDev1 = "/dev/spidev0.1" ; to "/dev/spidev1.0" ;
+sed -i -e "s/spidev0\.1/spidev1\.0/g" wiringPi/wiringPiSPI.c
+
 chmod +x ./build  
 sudo ./build  
+
+gpio readall  
 
 #### # git clone
 cd  
@@ -98,7 +109,7 @@ git clone https://github.com/FREEWING-JP/OrangePi_PC2_FBTFT_fbflex_35_lcd.git
 
 #### # compile
 cd ~/OrangePi_PC2_FBTFT_fbflex_35_lcd  
-gcc -o fbflex_lcd_op_wiringop fbflex_lcd_op_wiringop.c -lwiringPi  
+gcc -o fbflex_lcd_op_wiringop fbflex_lcd_op_wiringop.c -lwiringPi -lpthread  
 
 #### # execute !
 sudo ./fbflex_lcd_op_wiringop  
