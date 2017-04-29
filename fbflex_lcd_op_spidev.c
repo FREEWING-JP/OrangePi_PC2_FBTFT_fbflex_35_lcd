@@ -14,8 +14,8 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include <errno.h>
-#include <sys/time.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
@@ -42,7 +42,7 @@
 
 static const uint32_t mode = 0;
 static const uint8_t bits = 8;
-static const uint32_t speed = 28000000;
+static const uint32_t speed = 13200000;
 
 uint8_t lcd_rotations[4] = {
 	0b00101000,	//   0
@@ -84,6 +84,8 @@ void delayms(int ms) {
 	req.tv_sec  = 0;
 	req.tv_nsec = ms * 1000000L;
 
+	// warning: implicit declaration of function ‘nanosleep’ [-Wimplicit-function-declaration]
+	// include <time.h>
 	nanosleep(&req, NULL);
 //	delay(ms);
 }
@@ -217,7 +219,50 @@ void lcd_data(uint8_t dat) {
 }
 
 
-void lcd_color(uint16_t col) {
+// Speed Up faster x64
+#define SPI_SPEED_UP 64
+
+#ifdef SPI_SPEED_UP
+uint8_t bytex[2*SPI_SPEED_UP];
+uint16_t bytex_count = 0;
+
+void lcd_color_spd_start() {
+
+	bytex_count = 0;
+}
+
+void lcd_color_spd_end() {
+
+	if (bytex_count == 0)
+		return;
+
+	spi_transmit(LCD_CS, &bytex[0], (bytex_count * 2));
+	bytex_count = 0;
+}
+
+void lcd_color_spd(uint16_t col) {
+
+	// RGB565
+	// 0xF800 R(R4-R0, DB15-DB11)
+	// 0x07E0 G(G5-G0, DB10- DB5)
+	// 0x001F B(B4-B0, DB4 - DB0)
+	bytex[bytex_count*2 + 0]= col>>8;
+	bytex[bytex_count*2 + 1]= col&0x00FF;
+	++bytex_count;
+	if (bytex_count == SPI_SPEED_UP) {
+		lcd_color_spd_end();
+	}
+}
+
+#else
+
+void lcd_color_spd_start() {
+}
+
+void lcd_color_spd_end() {
+}
+
+void lcd_color_spd(uint16_t col) {
 	uint8_t b1[2];
 
 	// RGB565
@@ -228,6 +273,8 @@ void lcd_color(uint16_t col) {
 	b1[1]= col&0x00FF;
 	spi_transmit(LCD_CS, &b1[0], sizeof(b1));
 }
+
+#endif
 
 
 uint16_t colorRGB(uint8_t r, uint8_t g, uint8_t b) {
@@ -242,11 +289,10 @@ uint16_t colorRGB(uint8_t r, uint8_t g, uint8_t b) {
 	return col;
 }
 
-
 void lcd_colorRGB(uint8_t r, uint8_t g, uint8_t b) {
 
 	// RGB565
-	lcd_color(colorRGB(r, g, b));
+	lcd_color_spd(colorRGB(r, g, b));
 }
 
 
@@ -321,7 +367,10 @@ void lcd_fillframe(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t col)
 	int span=h*w;
 	lcd_setframe(x,y,w,h);
 	int q;
-	for(q=0;q<span;q++) { lcd_color(col); }
+
+	lcd_color_spd_start();
+	for(q=0;q<span;q++) { lcd_color_spd(col); }
+	lcd_color_spd_end();
 }
 
 void lcd_fill(uint16_t col) {
@@ -333,7 +382,10 @@ void lcd_fillframeRGB(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint8_t r,
 	int span=h*w;
 	lcd_setframe(x,y,w,h);
 	int q;
+
+	lcd_color_spd_start();
 	for(q=0;q<span;q++) { lcd_colorRGB(r, g, b); }
+	lcd_color_spd_end();
 }
 
 void lcd_fillRGB(uint8_t r, uint8_t g, uint8_t b) {
@@ -362,6 +414,9 @@ void lcd_img(char *fname, uint16_t x, uint16_t y) {
 		printf("File Size: %lu\nOffset: %lu\nWidth: %lu\nHeight: %lu\nBPP: %lu\n\n",isize,ioffset,iwidth,iheight,ibpp);
 
 		lcd_setframe(x,y,iwidth,iheight); //set the active frame...
+
+		lcd_color_spd_start();
+
 		rowbytes=(iwidth*3) + 4-((iwidth*3)%4);
 		for (p=iheight-1;p>0;p--) {
 			// p = relative page address (y)
@@ -378,6 +433,7 @@ void lcd_img(char *fname, uint16_t x, uint16_t y) {
 				lcd_colorRGB(buf[2], buf[1], buf[0]);
 			}
 		}
+		lcd_color_spd_end();
 
 		fclose(f);
 	}
