@@ -2,8 +2,8 @@
 Orange Pi PC 2 Allwinner H5 FBTFT fbflex 3.5 inch TFT LCD module SPI Control program
 
 ---
-## Raspberry Pi用 FBTFT fbflex対応の汎用 3.5インチ TFT液晶を自前のプログラムで制御する方法
-http://www.neko.ne.jp/~freewing/raspberry_pi/raspberry_pi_3_tft_lcd_35inch_fbflex_2/  
+## Orange Pi PC 2で Raspberry Pi用 FBTFT fbflex対応の汎用 3.5インチ TFT液晶を自前のプログラムで制御する方法
+http://www.neko.ne.jp/~freewing/raspberry_pi/orange_pi_pc2/  
 
 You can choose any control method .  
 1. Linux spidev version  
@@ -18,6 +18,27 @@ http://www.orangepi.org/orangepipc2/
 ## Allwinner H5 Homepage
 http://www.allwinnertech.com/index.php?c=product&a=index&id=57  
 
+## Armbian - Orange Pi PC2
+https://www.armbian.com/orange-pi-pc2/  
+
+#### # Armbian Version
+#### # uname -a
+Linux orangepipc2 4.10.0-sun50iw2 #3 SMP Fri Apr 28 03:49:31 CEST 2017 aarch64 aarch64 aarch64 GNU/Linux  
+
+---
+## Other Resources
+
+#### Orange Pi PC 2 Allwinner H5 FBTFT fbflex 3.5 inch TFT LCD module SPI Control program
+https://github.com/FREEWING-JP/OrangePi_PC2_FBTFT_fbflex_35_lcd  
+
+#### Raspberry Pi FBTFT fbflex 3.5 inch TFT LCD module SPI Control program
+https://github.com/FREEWING-JP/RaspberryPi_FBTFT_fbflex_35_lcd  
+
+#### Raspberry Pi KeDei 3.5 inch TFT LCD module V5.0 SPI Control program
+https://github.com/FREEWING-JP/RaspberryPi_KeDei_35_lcd_v50  
+
+#### tinydrm for KeDei 3.5 inch V5.0 LCD module
+https://github.com/FREEWING-JP/tinydrm/tree/feature/kedei_35_v50/kedei_35_lcd_v50  
 
 ---
 ## References（参考文献）
@@ -35,13 +56,14 @@ https://github.com/l0nley/kedei35
 
 #### # Enable SPI
 sudo nano /boot/armbianEnv.txt  
-# Add Line  
+
+#### # Edit and Add Line
 overlays=spi1-spidev  
 
 sudo reboot  
 
-# ls -l /dev/spi*  
-crw------- 1 root root 153, 0 Apr 15 12:54 /dev/spidev1.0  
+#### # ls -l /dev/spi*
+crw------- 1 root root 153, 0 Apr 29 08:16 /dev/spidev1.0  
 
 #### # git clone
 cd  
