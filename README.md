@@ -27,6 +27,10 @@ Linux orangepipc2 4.10.0-sun50iw2 #3 SMP Fri Apr 28 03:49:31 CEST 2017 aarch64 a
   
 #### # uname -a
 Linux orangepipc2 4.13.14-sunxi64 #246 SMP Mon Nov 20 01:58:09 CET 2017 aarch64 aarch64 aarch64 GNU/Linux  
+##### # Enable SPI
+sudo nano /boot/armbianEnv.txt  
+overlays=spi-spidev  
+param_spidev_spi_bus=1  
 
 ---
 ## Other Resources
@@ -62,6 +66,7 @@ sudo nano /boot/armbianEnv.txt
 
 #### # Edit and Add Line
 overlays=spi1-spidev  
+
 
 sudo reboot  
 
