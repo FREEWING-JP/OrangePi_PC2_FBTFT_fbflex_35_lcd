@@ -24,6 +24,9 @@ https://www.armbian.com/orange-pi-pc2/
 #### # Armbian Version
 #### # uname -a
 Linux orangepipc2 4.10.0-sun50iw2 #3 SMP Fri Apr 28 03:49:31 CEST 2017 aarch64 aarch64 aarch64 GNU/Linux  
+  
+#### # uname -a
+Linux orangepipc2 4.13.14-sunxi64 #246 SMP Mon Nov 20 01:58:09 CET 2017 aarch64 aarch64 aarch64 GNU/Linux  
 
 ---
 ## Other Resources
@@ -90,7 +93,9 @@ overlays=spi1-spidev
 
 #### # build WiringOp H5
 cd  
-git clone https://github.com/kazukioishi/WiringOP.git -b h5  
+#### # git clone https://github.com/kazukioishi/WiringOP.git -b h5  
+#### # for Kernel 4.13 missing Hardware string in /proc/cpuinfo information
+git clone https://github.com/FREEWING-JP/WiringOP.git -b feature/mod_force_h5_for_kernel_4_13  
 cd WiringOP  
 
 #### # edit WiringOp H5
