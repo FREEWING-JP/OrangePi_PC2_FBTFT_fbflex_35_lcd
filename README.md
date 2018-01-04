@@ -95,13 +95,14 @@ overlays=spi1-spidev
 cd  
 #### # git clone https://github.com/kazukioishi/WiringOP.git -b h5  
 #### # for Kernel 4.13 missing Hardware string in /proc/cpuinfo information
-git clone https://github.com/FREEWING-JP/WiringOP.git -b feature/mod_force_h5_for_kernel_4_13  
+git clone https://github.com/FREEWING-JP/WiringOP.git -b h5  
 cd WiringOP  
 
+#### # no need FREE WING modified version WiringOp H5
 #### # edit WiringOp H5
 #### # nano wiringPi/wiringPiSPI.c
 #### # const static char *spiDev1 = "/dev/spidev0.1" ; to "/dev/spidev1.0" ;
-sed -i -e "s/spidev0\.1/spidev1\.0/g" wiringPi/wiringPiSPI.c
+#### # sed -i -e "s/spidev0\.1/spidev1\.0/g" wiringPi/wiringPiSPI.c
 
 chmod +x ./build  
 sudo ./build  
